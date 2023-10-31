@@ -1,0 +1,108 @@
+deck.gl GeoJsonLayer (Polygon) Example
+↩ Back to Gallery
+Demo
+
+Source
+<html>
+  <head>
+    <title>deck.gl GeoJsonLayer (Polygon) Example</title>
+
+    <script src="https://unpkg.com/deck.gl@^8.8.0/dist.min.js"></script>
+    <script src='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js'></script>
+
+    <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
+    <style type="text/css">
+      body {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+      }
+      .deck-tooltip {
+        font-family: Helvetica, Arial, sans-serif;
+        padding: 6px !important;
+        margin: 8px;
+        max-width: 300px;
+        font-size: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+  </body>
+
+  <script type="text/javascript">
+
+    const { DeckGL, GeoJsonLayer } = deck;
+
+    const COLOR_SCALE = [
+      // least
+      [156, 156, 156],
+      [46, 103, 62],
+      [72, 151, 87],
+      [122, 188, 108],
+      [180, 214, 124],
+      [223, 239, 152],
+      [254, 255, 202],
+      [248, 225, 151],
+      [242, 176, 109],
+      [228, 116, 78],
+      [199, 61, 51],
+      [151, 31, 41],
+      [155, 29, 224]
+      // most
+    ];
+
+    const geojsonLayer = new GeoJsonLayer({
+      data: './2d_polygons/analysis.geojson',
+      opacity: 0.7,
+      stroked: false,
+      filled: true,
+      extruded: true,
+      wireframe: false,
+
+      getElevation: f => f.properties.vpa / 10000,
+      getFillColor: f => COLOR_SCALE[colorScale(f.properties.vpa)],
+      getLineColor: [255, 255, 255],
+
+      pickable: true
+    });
+
+    console.log(geojsonLayer)
+
+    new DeckGL({
+      mapStyle: 'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
+      initialViewState: {
+        latitude: 33.21,
+        longitude: -117.32,
+        zoom: 12,
+        maxZoom: 16,
+        pitch: 60
+      },
+      controller: true,
+      layers: [geojsonLayer],
+      getTooltip
+    });
+
+    function colorScale(x) {
+      if (x > 30000000) return 12;
+      else if (x > 20000000) return 11;
+      else if (x > 10000000) return 10;
+      else if (x > 8000000) return 9;
+      else if (x > 7000000) return 8;
+      else if (x > 6000000) return 7;
+      else if (x > 5000000) return 6;
+      else if (x > 4000000) return 5;
+      else if (x > 3000000) return 4;
+      else if (x > 2000000) return 3;
+      else if (x > 1000000) return 2;
+      else if (x > 1) return 1;
+      else return 0;
+    }
+
+    function getTooltip({object}) {
+      return object && `Value per Acre`
+    }
+
+  </script>
+</html>
